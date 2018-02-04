@@ -1,0 +1,42 @@
+<h2><em><u><strong>Kubernetes-Anywhere On VMware vSphere</strong></u></em></h2>
+<a href="https://kubernetes.io/docs/getting-started-guides/vsphere/" rel="nofollow">https://kubernetes.io/docs/getting-started-guides/vsphere/</a>
+
+<a href="https://github.com/kubernetes/kubernetes-anywhere/blob/master/phase1/vsphere/README.md" rel="nofollow">https://github.com/kubernetes/kubernetes-anywhere/blob/master/phase1/vsphere/README.md</a>
+
+<a href="http://virtualinator.com/category/vmware/page/2/" rel="nofollow">http://virtualinator.com/category/vmware/page/2/</a>
+
+<a href="https://github.com/vmware/photon/wiki/Downloading-Photon-OS" rel="nofollow">https://github.com/vmware/photon/wiki/Downloading-Photon-OS</a>
+
+<a href="https://storage.googleapis.com/kubernetes-anywhere-for-vsphere-cna-storage/KubernetesAnywhereTemplatePhotonOS.ova">https://storage.googleapis.com/kubernetes-anywhere-for-vsphere-cna-storage/KubernetesAnywhereTemplatePhotonOS.ova</a>
+
+<a href="https://hub.docker.com/r/ashivani/k8s-ignition/tags/" rel="nofollow">https://hub.docker.com/r/ashivani/k8s-ignition/tags/</a>
+
+<a href="https://blogs.vmware.com/cloudnative/enable-docker-remote-api-photon-os/" rel="nofollow">https://blogs.vmware.com/cloudnative/enable-docker-remote-api-photon-os/</a>
+
+<a href="https://github.com/vmware/photon/wiki/Frequently-Asked-Questions#q-i-just-booted-into-freshly-installed-photon-os-instance-why-isnt-docker-ps-working" rel="nofollow">https://github.com/vmware/photon/wiki/Frequently-Asked-Questions#q-i-just-booted-into-freshly-installed-photon-os-instance-why-isnt-docker-ps-working</a>
+<h2><a name="TOC-Helm-and-Installation-Of-Applications"></a><u><em><strong>Helm and Installation Of Applications</strong></em></u></h2>
+<a href="https://github.com/kubernetes/helm" rel="nofollow">https://github.com/kubernetes/helm</a>
+
+<a href="https://github.com/kubernetes/helm/blob/master/docs/using_helm.md" rel="nofollow">https://github.com/kubernetes/helm/blob/master/docs/using_helm.md</a>
+<h4><a name="TOC-Jenkins"></a><u><em>Jenkins</em></u></h4>
+<strong>Installing containerized jenkins with plugins required including kubernetes plugin which will deploy slave containers on the fly for job executions</strong>
+
+<a href="http://devopsku.be/components/jenkins/" rel="nofollow">http://devopsku.be/components/jenkins/</a>
+
+<a href="https://github.com/kubernetes/charts/tree/master/stable/jenkins" rel="nofollow">https://github.com/kubernetes/charts/tree/master/stable/jenkins</a>
+
+<a href="https://hub.docker.com/r/jenkinsci/jenkins/tags/" rel="nofollow">https://hub.docker.com/r/jenkinsci/jenkins/tags/</a>
+
+<a href="https://hub.docker.com/r/jenkinsci/jnlp-slave/tags/" rel="nofollow">https://hub.docker.com/r/jenkinsci/jnlp-slave/tags/</a>
+<h4><a name="TOC-Git"></a><u><em>Git</em></u></h4>
+<a href="https://github.com/kubernetes/charts/tree/master/stable/gitlab-ce" rel="nofollow">https://github.com/kubernetes/charts/tree/master/stable/gitlab-ce</a>
+
+<a href="https://hub.docker.com/r/gitlab/gitlab-ce/tags/" rel="nofollow">https://hub.docker.com/r/gitlab/gitlab-ce/tags/</a>
+<h2><a name="TOC-Imp-Notes"></a><u><em><strong>Imp Notes</strong></em></u></h2>
+<ol>
+	<li>I have pointed the application services to use node ports. As per Kubernetes logic, the service listens at that port from all nodes of the kubernetes cluster.</li>
+	<li>Added DNS Host A multiple entries with same FQDN name and all nodes IPs</li>
+	<li>Used nginx for reverse proxy</li>
+	<li>Used NFS share (which is being backed up using vDP - vSphere Data Protection) for application data so that we don't loose any configuration.</li>
+</ol>
+

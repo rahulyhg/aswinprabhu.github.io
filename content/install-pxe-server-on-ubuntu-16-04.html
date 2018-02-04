@@ -1,0 +1,214 @@
+Link: https://www.ostechnix.com/how-to-install-pxe-server-on-ubuntu-16-04/
+
+BY SK · AUGUST 8, 2016
+
+If you’re a System administrator, you happen to install many operating systems very often on your lab or workplace. Sometimes, you might fed up with installing OS on multiple systems everyday. Wouldn’t be better if you could install OS on multiple systems at a time?  This is where PXE server comes in handy. PXE, abbreviation of preboot execution environment, allows us to deploy operating systems on multiple systems automatically at a time in the network. Also PXE server helps you to install an OS in a remote system that doesn’t have any options for CD/DVD or USB drives.
+
+
+ 
+In this tutorial, we will see how to install PXE Server on Ubuntu 16.04 LTS server, and how to configure it to deploy operating systems in the pxe client systems.
+
+Install PXE Server on Ubuntu 16.04 LTS server
+I tested this guide on Ubuntu 16.04 LTS 64 bit server. However, the steps might work on Debian and its derivatives.
+
+In order to setup PXE server, you need to have a working DHCP and TFTP servers. DHCP server is used to distribute the IP addresses for the network systems, so that the client systems can communicate with PXE server. And, TFTP server is used to download the installation files from PXE server and send them to the PXE clients. We can deploy PXE, and DHCP servers on the same system or use different systems for each server. Due to lack of resources, I have tested this on a single system. You can either use a separate system or single machine for all servers. Choice is yours.
+
+Let’s get started. First, we need to setup DHCP server.
+
+To install DHCP server on Ubuntu, refer the following link.
+
+Install DHCP Server in Ubuntu 16.04
+Once you installed DHCP server, install PXE server along with TFTP and other dependencies using command:
+
+sudo apt-get install apache2 tftpd-hpa inetutils-inetd
+Install PXE server
+Install PXE server
+PXE server has been installed. Let us go ahead and configure it.
+
+Configuring PXE server
+Edit file /etc/default/tftpd-hpa file using your favourite editor:
+
+sudo nano /etc/default/tftpd-hpa
+Add the following lines at the end of the file to enable TFTP server.
+
+[...]
+RUN_DAEMON="yes"
+OPTIONS="-l -s /var/lib/tftpboot"
+Configure PXE server
+Configure PXE server
+Edit /etc/inetd.conf file:
+
+sudo nano /etc/inetd.conf
+Add or modify the following line at the end:
+
+tftp    dgram   udp    wait    root    /usr/sbin/in.tftpd /usr/sbin/in.tftpd -s /var/lib/tftpboot
+Please note that If you use IPv6, you need to change the word udp to udp4.
+
+Save and close the file.
+
+Finally restart tftp service to take effect all changes.
+
+sudo systemctl restart tftpd-hpa
+Check if tftp service is running or not with command:
+
+sudo systemctl status tftpd-hpa
+Sample output:
+
+● tftpd-hpa.service - LSB: HPA's tftp server
+ Loaded: loaded (/etc/init.d/tftpd-hpa; bad; vendor preset: enabled)
+ Active: active (running) since Mon 2016-08-08 14:49:30 IST; 1min 47s ago
+ Docs: man:systemd-sysv-generator(8)
+ Process: 3867 ExecStop=/etc/init.d/tftpd-hpa stop (code=exited, status=0/SUCCE
+ Process: 3879 ExecStart=/etc/init.d/tftpd-hpa start (code=exited, status=0/SUC
+ Tasks: 1
+ Memory: 152.0K
+ CPU: 63ms
+ CGroup: /system.slice/tftpd-hpa.service
+ └─3890 /usr/sbin/in.tftpd --listen --user tftp --address [::]:69 --se
+
+Aug 08 14:49:30 ubuntuserver systemd[1]: Stopped LSB: HPA's tftp server.
+Aug 08 14:49:30 ubuntuserver systemd[1]: Starting LSB: HPA's tftp server...
+Aug 08 14:49:30 ubuntuserver tftpd-hpa[3879]: * Starting HPA's tftpd in.tftpd
+Aug 08 14:49:30 ubuntuserver tftpd-hpa[3879]: ...done.
+Aug 08 14:49:30 ubuntuserver systemd[1]: Started LSB: HPA's tftp server.
+ostechnix@ubuntuserver: ~_003
+
+As you see in the above output, tftp service is running.
+
+Copying Ubuntu Installation files to the PXE Server
+The configuration part is over. Next we need to copy the installation files to the PXE server.
+
+Mount the Ubuntu installation ISO that you want to deploy on the client systems. Or, If you have installation DVD, copy all contents of the media to the PXE server.
+
+For the purpose of this tutorial, we are going to deploy Ubuntu 16.04 LTS 64 bit version in our PXE clients. To do so, mount the Ubuntu 16.04 ISO in any location of your choice. I am going to mount it on /mnt/ directory.
+
+sudo mount -o loop ubuntu-16.04-server-amd64.iso /mnt/
+Now, go to the location where you mounted the (/mnt/ in our case) and copy the bootable installation files to /var/lib/tftpboot/ directory of our PXE server.
+
+cd /mnt/
+sudo cp -fr install/netboot/* /var/lib/tftpboot/
+ostechnix@ubuntuserver: -mnt_004
+
+We have copied all necessary bootable files. Next create a directory called ubuntu in the apache root document folder.
+
+sudo mkdir /var/www/html/ubuntu
+Now, copy all the files from the Ubuntu ISO using command:
+
+sudo cp -fr /mnt/* /var/www/html/ubuntu/
+ostechnix@ubuntuserver: -mnt_005
+
+Next edit /var/lib/tftpboot/pxelinux.cfg/default file:
+
+sudo nano /var/lib/tftpboot/pxelinux.cfg/default
+Add the following contents at the end depending upon the distribution architecture you use.
+
+[...]
+label linux
+        kernel ubuntu-installer/amd64/linux
+        append ks=http://192.168.1.105/ks.cfg vga=normal initrd=ubuntu-installer/amd64/initrd.gz
+ramdisk_size=16432 root=/dev/rd/0 rw  --
+ostechnix@ubuntuserver: -mnt_006
+
+
+ 
+Here 192.168.1.105 is my PXE server’s IP address. Replace this IP address with your pxe server’s address.
+
+For 32bit PXE clients, you need to add the following lines:
+
+[...]
+label linux
+        kernel ubuntu-installer/i386/linux
+        append ks=http://192.168.1.105/ks.cfg vga=normal initrd=ubuntu-installer/i386/initrd.gz
+ramdisk_size=16432 root=/dev/rd/0 rw  --
+Again, replace the IP address with your own.
+
+Save and close the file.
+
+Configuring DHCP Server settings
+Go to your DHCP server and do the following changes. Remember I use the same server for PXE and DHCP server.
+
+Edit /etc/dhcp/dhcpd.conf file:
+
+sudo nano /etc/dhcp/dhcpd.conf
+Add the following lines at the end:
+
+allow booting;
+allow bootp;
+option option-128 code 128 = string;
+option option-129 code 129 = text;
+next-server 192.168.1.105;
+filename "pxelinux.0";
+ostechnix@ubuntuserver: -mnt_008
+
+Replace the IP address with your own.
+
+Save and close the file.
+
+Restart DHCP server to take effect the changes.
+
+sudo systemctl restart isc-dhcp-server
+If you have come this far, congratulations! Your PXE server is ready to use.
+
+Install OS on PXE clients
+It is time to deploy OS on pxe clients. Make sure you have enabled PXE boot option in your client system’s BIOS settings.
+
+For the demo purpose, I will show you how to deploy OS on pxe client in Virtualbox. You can use either physical system or virtual machine.
+
+Open Oracle VirtualBox, and Click New to create a guest machine.
+
+Enter the Virtual machine name and select architecture.
+
+Create Virtual Machine_010
+
+Specify the virtual machine’s RAM size.
+
+Create Virtual Machine_011
+
+Select “Create a virtual hard drive now” to create hard disk for our virtual machine.
+
+Create Virtual Machine_012
+
+Select the type of file that you would like to use for the new virtual hard disk.
+
+Create Virtual Hard Disk_013
+
+Choose whether the new virtual hard drive file should grow as it is used or if it should be created as fixed size.
+
+Create Virtual Hard Disk_014
+
+Enter the name of the virtual hard disk file and specify the size of the virtual hard disk.
+
+Create Virtual Hard Disk_015
+
+Our Virtual Client machine has been created now.
+
+Next, go to the newly created virtual machine’s settings and chnage the boot order.
+
+To do so, select the virtual machine and click Settings icon on the menu bar.
+
+Oracle VM VirtualBox Manager_016
+
+From the System tab, choose Network as first boot device.
+
+Ubuntu 16.04 LTS pxe client - Settings_017
+
+Next, click Network tab on the left, and select “Bridged Adapter” from the “Attached to” drop down box.
+
+Ubuntu 16.04 LTS pxe client - Settings_018
+
+Finally, click OK and start the virtual machine.
+
+Ubuntu 16.04 LTS pxe client [Running] - Oracle VM VirtualBox_019
+
+That’s it. Start installing Ubuntu in your pxe client just like you do in the normal system.
+
+Conclusion
+I hope this guide will give a basic idea about what is PXE server, how to install and configure it in a local area network, and how to deploy OS on the PXE clients. For your information, I have covered only the basic part. PXE server is vast topic. We can’t cover all details in a single tutorial. Also, I have only tested Ubuntu PXE client. As you might know, using a single PXE server, we can deploy different flavours of Linux distros. I will write about multi-distribution deployment using a single PXE server in the days to come.
+
+That’s all for today. I will be here soon with another interesting article. Until then, stay tuned with OSTechNix.
+
+Source:
+
+Ubuntu Community wiki
+Cheers!
+

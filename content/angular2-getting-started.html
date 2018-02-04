@@ -1,0 +1,139 @@
+@Host, @HostBindings
+"use strict";
+{{#each scripts.polyfills}}
+
+Directives
+Router - <a href="https://angular.io/docs/ts/latest/guide/router.html">https://angular.io/docs/ts/latest/guide/router.html</a>
+Modules - <a href="https://angular.io/docs/ts/latest/guide/ngmodule.html">https://angular.io/docs/ts/latest/guide/ngmodule.html</a>
+
+<a href="https://angular.io/docs/ts/latest/tutorial/toh-pt3.html">https://angular.io/docs/ts/latest/tutorial/toh-pt3.html</a>
+
+Angular 2 (with ES5, TypeScript, Dart, Ionic, WebPack, GulpJs)
+<h3 id="sites-page-title-header" align="left"></h3>
+
+<hr />
+
+<h3 id="sites-page-title-header" align="left"><span id="sites-page-title" dir="ltr">Quick Start</span></h3>
+<div id="sites-canvas-main" class="sites-canvas-main">
+<div id="sites-canvas-main-content">
+<table class="sites-layout-name-one-column sites-layout-hbox" cellspacing="0">
+<tbody>
+<tr>
+<td class="sites-layout-tile sites-tile-name-content-1">
+<div dir="ltr">
+<h3><a name="TOC-To-install-and-use-the-Angular-CLI:"></a>To install and use the Angular CLI:</h3>
+<div><pre>
+<b>npm install -g angular-cli</b>
+<b>npm update -g angular-cli    // To update angular-cli</b>
+<b>ng new <span style="color:#3d85c6;">project_name</span></b>
+<b>cd <span style="color:#3d85c6;">project_name</span></b>
+<b><span style="color:#3d85c6;"> </span></b>
+<b>ng serve</b>
+</pre>
+<div>
+<h3><a name="TOC-Directory-structure"></a>Directory structure</h3>
+</div>
+<div><b>config</b> - Environment &amp; testing</div>
+<div><b>dist</b> - Contains the compiled application. Nothing for developers to change here</div>
+<div><b>e2e</b> - End to End testing</div>
+<div><b>public</b> - Directory which contains all our stylesheets, script libraries (External scripts, JQuery, etc), images</div>
+<div><b>src</b> - All our work goes here</div>
+<div><b>src/app</b> - Contains all the components, service, etc</div>
+<div><b>src/app/app.component.spec.ts</b> - Used in testing</div>
+<div><b>typings</b> -</div>
+<div><b>angular-cli.json</b> -</div>
+<div><b>angular-cli-build.json</b> -</div>
+<div>
+<h3><a name="TOC-Dev-commands"></a>Dev commands</h3>
+</div>
+<div><b>ng g component todos</b> - Creates the skeleton framework in src/apps for the new component <i>todos</i></div>
+<div>
+<h3>Todo List</h3>
+</div>
+<pre>   {{todo.text}}
+export class TodosComponent implements OnInit {
+  todos;
+  text;
+
+  constructor() {}
+
+  ngOnInit() {
+    this.todos = [
+      { text: "Pick up kids from school" },
+      { text: "Prepare for meeting" }
+    ];
+  }
+}
+</pre>
+<div><b>ng g service todo</b> - Creates the skeleton framework in src/apps for the new service <i>todo</i></div>
+<div>Use bootstrap &amp; bootswatch for pre-defined UI layouts.</div>
+</div>
+</div></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+<hr />
+
+<h3 id="sites-page-title-header" align="left"><span id="sites-page-title" dir="ltr">Quick Start - Material</span></h3>
+<div id="sites-canvas-main" class="sites-canvas-main">
+<div id="sites-canvas-main-content">
+<table class="sites-layout-name-one-column sites-layout-hbox" cellspacing="0">
+<tbody>
+<tr>
+<td class="sites-layout-tile sites-tile-name-content-1">
+<div dir="ltr">
+<div>Installing Angular 2 Material Design Packages</div>
+<div>npm install --save @angular2-material/core @angular2-material/card @angular2-material/icon @angular2-material/toolbar</div>
+<div>-- The core module is necessary for all Angular 2 material design</div>
+<div>Install HammerJS</div>
+<div>npm install --save hammerjs</div>
+<div>-- Hammer add support for touch gestures and is used by the Icon Material components</div>
+<div>npm install --save @types/hammerjs</div>
+<div>//typings install dt~hammerjs --save --global</div>
+<div>-- Add the typings of hammerjs</div>
+<div>SystemJS configuration</div>
+<div>Add the Angular 2 Material NPM packages to systemjs.config.js by using the UMD (Universal Module Definition) files</div>
+<div>
+<code>
+map: {
+// our app is within the app folder
+app: 'app',
+// angular bundles
+'@angular/core': 'npm:@angular/core/bundles/core.umd.js',
+'@angular/common': 'npm:@angular/common/bundles/common.umd.js',
+'@angular/compiler': 'npm:@angular/compiler/bundles  /compiler.umd.js',
+'@angular/platform-browser': 'npm:@angular/platform-browser/bundles/platform-browser.umd.js',
+'@angular/platform-browser-dynamic': 'npm:@angular/platform-browser-dynamic/bundles/platform-browser- dynamic.umd.js',
+'@angular/http': 'npm:@angular/http/bundles/http.umd.js',
+'@angular/router': 'npm:@angular/router/bundles/router.umd.js',
+'@angular/forms': 'npm:@angular/forms/bundles/forms.umd.js',
+// other libraries
+'rxjs': 'npm:rxjs',
+'angular2-in-memory-web-api': 'npm:angular2-in-memory-web-api',
+'@angular2-material/core': 'npm:@angular2-material/core/core.umd.js',
+'@angular2-material/card': 'npm:@angular2-material/card/card.umd.js',
+'@angular2-material/button': 'npm:@angular2-material/button/button.umd.js',
+'@angular2-material/icon': 'npm:@angular2-material/icon/icon.umd.js',
+},
+</code>
+</div>
+<div>Import Material Modules and Providers in AppModule</div>
+<pre>
+import {MdCardModule} from ‘@angular2-material/card’;
+import {MdButtonModule} from ‘@angular2-material/button’;
+import {MdIconModule} from ‘@angular2-material/icon’;
+import {MdIconRegistry} from ‘@angular2-material/icon’;
+</pre>
+
+</div></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+<hr />
+
